@@ -1,5 +1,7 @@
 package com.gaurav.demoapp.ui.gallery;
 
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.gaurav.demoapp.R;
 import com.google.android.gms.common.SignInButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +34,11 @@ public class ProfileInfoFragment extends Fragment {
 
     TextView userNameTexts,userEmailTexts;
     ImageView imageViewUsers;
+    DatabaseReference databaseReference;
+    LocationListener locationListener;
+    LocationManager locationManager;
+    private final long MIN_TIME =1000;
+    private final long MAX_TIME =5;
 
 
     @BindView(R.id.userEmailText) TextView userEmailText;
@@ -61,6 +73,24 @@ public class ProfileInfoFragment extends Fragment {
             userEmailTexts.setText(getArguments().getString("userEmail"));
             Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
         }
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Location");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
 
         return root;

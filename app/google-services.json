@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "238288135458",
+    "project_id": "signindemo-1629759716146",
+    "storage_bucket": "signindemo-1629759716146.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238288135458:android:e2d53590f9e3d148fb317b",
+        "android_client_info": {
+          "package_name": "com.gaurav.demoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238288135458-ps8lte71eufpfjf4sne6gfll8b8rjcgh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gaurav.demoapp",
+            "certificate_hash": "a230131a2656f8caea7e2d4dfb5940ee6854b726"
+          }
+        },
+        {
+          "client_id": "238288135458-2n607oko5kucpu7n10n8t0adfo2gvv0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt6CurTDY9r8YTd_J504khEnFZSuql5zY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238288135458-2n607oko5kucpu7n10n8t0adfo2gvv0t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -55,12 +55,7 @@ public class HomeFragment extends Fragment {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
          root = inflater.inflate(R.layout.fragment_home, container, false);
-        ButterKnife.bind(getActivity(),root);
-
-
-
-       //  navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-
+         ButterKnife.bind(getActivity(),root);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -68,20 +63,9 @@ public class HomeFragment extends Fragment {
 
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
-
-
-
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-     //   updateUI(account);
-
-
-
         SignInButton signInButton = root.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_WIDE);
-
-
-
-
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override

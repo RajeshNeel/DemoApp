@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
 }
-
+apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
@@ -57,4 +57,10 @@ dependencies {
     // custom progress dialog
     implementation 'com.github.d-max:spots-dialog:0.4@aar'
     implementation 'androidx.multidex:multidex:2.0.1'
+    // firebase dependencies
+    implementation platform('com.google.firebase:firebase-bom:28.4.0')
+
+    implementation 'com.google.firebase:firebase-core:19.0.1'
+    implementation 'com.google.firebase:firebase-database:20.0.1'
+
 }
