@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.gaurav.demoapp.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,8 +28,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public class HomeFragment extends Fragment {
 
@@ -33,18 +40,25 @@ public class HomeFragment extends Fragment {
     private GoogleSignInClient googleSignInClient;
     private int  RC_SIGN_IN = 100;
     @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
-
-
+    private NavController navController;
+    View root;
+    ImageView userImage;
+    TextView userName,userEmail;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+
+
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
+         root = inflater.inflate(R.layout.fragment_home, container, false);
+        ButterKnife.bind(getActivity(),root);
 
 
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+       //  navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -53,11 +67,20 @@ public class HomeFragment extends Fragment {
 
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
+
+
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
      //   updateUI(account);
 
+
+
         SignInButton signInButton = root.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_WIDE);
+
+
+
+
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +120,7 @@ public class HomeFragment extends Fragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
             if (acct != null) {
+
                 String personName = acct.getDisplayName();
                 String personGivenName = acct.getGivenName();
                 String personFamilyName = acct.getFamilyName();
@@ -105,8 +129,17 @@ public class HomeFragment extends Fragment {
                 Uri personPhoto = acct.getPhotoUrl();
             }
 
+         //   userName.setText(account.getDisplayName());
+          //  userEmail.setText(account.getEmail());
+
+
             Toast.makeText(getContext(),"SignedIn Successfully."+acct.getDisplayName()+" person email :"+acct.getEmail(),Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
+
+            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery);
+
+
+
           //  updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
