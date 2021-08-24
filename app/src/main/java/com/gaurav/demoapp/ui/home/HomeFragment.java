@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.gaurav.demoapp.R;
+import com.gaurav.demoapp.utils.CommonMethod;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -98,6 +99,8 @@ public class HomeFragment extends Fragment {
 
 
     private void signIn() {
+
+        CommonMethod.createProgress(getContext(),"Signing...");
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -116,31 +119,36 @@ public class HomeFragment extends Fragment {
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+
         try {
+
+            CommonMethod.closeProgress();
+
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
             if (acct != null) {
 
                 String personName = acct.getDisplayName();
-                String personGivenName = acct.getGivenName();
+                String userGivenName = acct.getGivenName();
                 String personFamilyName = acct.getFamilyName();
                 String personEmail = acct.getEmail();
                 String personId = acct.getId();
                 Uri personPhoto = acct.getPhotoUrl();
             }
 
-         //   userName.setText(account.getDisplayName());
-          //  userEmail.setText(account.getEmail());
-
-
             Toast.makeText(getContext(),"SignedIn Successfully."+acct.getDisplayName()+" person email :"+acct.getEmail(),Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
+            Bundle profileInfo = new Bundle();
+            profileInfo.putString("UserName", account.getDisplayName());
+            profileInfo.putString("userGivenName", account.getGivenName());
+            profileInfo.putString("userFamilyName", account.getFamilyName());
+            profileInfo.putString("userEmail", account.getEmail());
+            profileInfo.putString("userPhoto", String.valueOf(account.getPhotoUrl()));
 
-            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery);
+
+            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,profileInfo);
 
 
-
-          //  updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

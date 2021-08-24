@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.gaurav.demoapp.utils.CommonMethod;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                      case R.id.nav_login:
 
                          Log.v("Constants.TAG", "Login Called");
-                       //  navController.navigate(R.id.action_nav_home_to_nav_gallery);
+                         navController.navigate(R.id.nav_homes);
 
                          if (drawer.isDrawerOpen(GravityCompat.START)) {
                              drawer.closeDrawer(GravityCompat.START);
@@ -106,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
                      case R.id.nav_logout:
 
                          signOut();
+                         CommonMethod.createProgress(MainActivity.this,"Signing Out.");
+
                          if (drawer.isDrawerOpen(GravityCompat.START)) {
                              drawer.closeDrawer(GravityCompat.START);
                          }
@@ -140,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         // ...
 
+                        CommonMethod.closeProgress();
+
+                        navController.navigate(R.id.nav_homes);
+
                         Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
 
                     }
@@ -160,7 +167,19 @@ public class MainActivity extends AppCompatActivity {
                 userEmail.setText(account.getEmail());
                 userName.setText(account.getDisplayName());
                 Log.v("MainActivity :"," image url :"+account.getPhotoUrl());
-                Glide.with(MainActivity.this).load(account.getPhotoUrl()).into(userImage);
+
+                try {
+                    if(account.getPhotoUrl()!=null){
+
+                        Glide.with(MainActivity.this).load(account.getPhotoUrl()).into(userImage);
+
+                    }
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
         } catch (NullPointerException e){

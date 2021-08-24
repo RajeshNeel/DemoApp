@@ -54,4 +54,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:recyclerview-integration:4.11.0") {
         transitive = false
     }
+    // custom progress dialog
+    implementation 'com.github.d-max:spots-dialog:0.4@aar'
+    implementation 'androidx.multidex:multidex:2.0.1'
 }
