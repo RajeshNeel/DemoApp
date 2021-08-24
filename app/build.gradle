@@ -40,4 +40,13 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // added dependencies for google signIn
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    // ButterKnife Dependencies
+    implementation 'com.jakewharton:butterknife:10.2.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
+    // circularImage View
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'me.relex:circleindicator:1.2.2@aar'
 }
