@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     style="@style/Theme.AppCompat.DayNight.NoActionBar"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.register.RegisterFragment">
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_weight="1"
         android:orientation="vertical">
@@ -20,7 +20,7 @@
         <TextView
             android:id="@+id/splash_text"
             android:layout_width="wrap_content"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
             android:fontFamily="@font/barlin_sans_fb"
             android:gravity="center"
@@ -73,77 +73,20 @@
             android:textColorHint="#000000"
             android:textSize="18sp" />
 
-        <LinearLayout
+
+        <Button
+            android:id="@+id/firebase_sign_up_btn"
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/register_btn_background"
-            android:layout_marginStart="10dp"
-            android:paddingBottom="5dp"
-            android:paddingEnd="5dp"
-            android:layout_gravity="bottom"
-
-            android:gravity="bottom"
-            android:paddingLeft="5dp"
-            android:paddingStart="5dp"
-            android:paddingTop="5dp"
-            android:layout_marginTop="30dp"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/firebase_sign_in_btn"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:background="@drawable/rounded_edit_text"
-                android:text="LogIn"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:layout_marginRight="2dp"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/firebase_sign_up_btn"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:background="@drawable/rounded_edit_text"
-                android:text="Register"
-                android:layout_marginLeft="2dp"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-
-
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="35dp"
             android:layout_marginStart="35dp"
             android:padding="4dp"
-            android:layout_marginBottom="50dp"
-            android:layout_marginTop="40dp"
             android:background="@drawable/login_button_custom_view"
-            android:text="SignIn"
+            android:text="Register"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/white"
+            android:textSize="15sp"
             android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/text_forgot_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="Forgot Password ?"
-            android:textColor="#FFC1C1"
-            />
 
 
 
@@ -151,6 +94,4 @@
 
 
 
-</RelativeLayout>
-
-
+</LinearLayout>

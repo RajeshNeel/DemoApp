@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         View headerView = navigationView.getHeaderView(0);
 
-         userImage  = headerView.findViewById(R.id.img);
+         userImage  = headerView.findViewById(R.id.imageView);
          userName = (TextView) headerView.findViewById(R.id.userName);
          userEmail = (TextView) headerView.findViewById(R.id.userEmail);
 
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
                 userEmail.setText(account.getEmail());
                 userName.setText(account.getDisplayName());
-                Log.v("MainActivity :"," image url :"+account.getPhotoUrl());
+                Log.v("MainActivity :"," image url 2:"+account.getPhotoUrl());
 
                 try {
                     if(account.getPhotoUrl()!=null){

@@ -3,10 +3,13 @@ package com.gaurav.demoapp.ui.home;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,8 +31,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,11 +48,24 @@ public class HomeFragment extends Fragment {
     private GoogleSignInClient googleSignInClient;
     private int  RC_SIGN_IN = 100;
     @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
+    @BindView(R.id.firebase_sign_in_btn) Button firebase_sign_in_btn;
+    @BindView(R.id.firebase_sign_up_btn) Button firebase_sign_up_btn;
+
+   /* @BindView(R.id.edit_text_user_email) EditText edit_text_user_email;
+    @BindView(R.id.password) EditText edit_text_password;*/
+
+
+
+
+    Button firebaseLoginBtn,firebaseSignUpBtn;
+    EditText edit_text_user_email,edit_text_password;
+    TextView textForgotPassword;
+
     private NavController navController;
     View root;
     ImageView userImage;
     TextView userName,userEmail;
-
+    private FirebaseAuth auth;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -61,10 +81,24 @@ public class HomeFragment extends Fragment {
                 .requestEmail()
                 .build();
 
+
+
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
+        auth = FirebaseAuth.getInstance();
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
+
         SignInButton signInButton = root.findViewById(R.id.sign_in_button);
+
+        firebaseLoginBtn = root.findViewById(R.id.firebase_sign_in_btn);
+        firebaseSignUpBtn = root.findViewById(R.id.firebase_sign_up_btn);
+        textForgotPassword = root.findViewById(R.id.text_forgot_password);
+
+        edit_text_user_email = root.findViewById(R.id.edit_text_user_email);
+        edit_text_password = root.findViewById(R.id.password);
+
+
         signInButton.setSize(SignInButton.SIZE_WIDE);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +109,98 @@ public class HomeFragment extends Fragment {
 
             }
         });
+
+
+        textForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String emailId = edit_text_user_email.getText().toString();
+
+                if(TextUtils.isEmpty(emailId)){
+                    Toast.makeText(getContext(),"Please enter email id",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                CommonMethod.createProgress(getContext(),"Sending reset password link");
+
+                auth.sendPasswordResetEmail(emailId).addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        CommonMethod.closeProgress();
+
+                        if(task.isSuccessful()){
+
+                            Toast.makeText(getContext()," password reset link has been sent to your email.",Toast.LENGTH_SHORT).show();
+
+                        }else{
+
+                            Toast.makeText(getContext()," failed to sent reset email.",Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+                });
+
+            }
+        });
+
+        firebaseSignUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Navigation.findNavController(root).navigate(R.id.action_nav_homes_to_nav_register);
+
+           //     navController.navigate(R.id.action_nav_homes_to_nav_register);
+            }
+        });
+
+        firebaseLoginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String email = edit_text_user_email.getText().toString().trim();
+
+                String password = edit_text_password.getText().toString().trim();
+
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(getContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(getContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.length() < 6) {
+                    Toast.makeText(getContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                CommonMethod.createProgress(getContext(),"Signing..");
+
+
+                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+
+                        if(task.isSuccessful()){
+
+                            Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
+                            CommonMethod.closeProgress();
+                            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery);
+                        }
+
+                    }
+                });
+
+            }
+        });
+
+
 
 
         return root;
