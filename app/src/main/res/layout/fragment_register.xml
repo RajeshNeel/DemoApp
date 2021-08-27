@@ -74,6 +74,7 @@
             android:textSize="18sp" />
 
 
+
         <Button
             android:id="@+id/firebase_sign_up_btn"
             android:layout_width="match_parent"
@@ -81,12 +82,13 @@
             android:layout_marginEnd="35dp"
             android:layout_marginStart="35dp"
             android:padding="4dp"
-            android:background="@drawable/login_button_custom_view"
+            android:background="@drawable/register_btn_background"
             android:text="Register"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/white"
             android:textSize="15sp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
 
 
 

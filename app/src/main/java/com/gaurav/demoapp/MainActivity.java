@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     ImageView userImage;
     TextView userName,userEmail;
+    private FirebaseAnalytics firebaseAnalytics;
 
 
     @Override
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(MainActivity.this);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
 
@@ -106,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
                      case R.id.nav_logout:
 
+
+
                          signOut();
                          CommonMethod.createProgress(MainActivity.this,"Signing Out.");
 
@@ -144,7 +150,9 @@ public class MainActivity extends AppCompatActivity {
                         // ...
 
                         CommonMethod.closeProgress();
-
+                        Bundle params = new Bundle();
+                        params.putString("user_logout", "Successful");
+                        firebaseAnalytics.logEvent("user_logout", params);
                         navController.navigate(R.id.nav_homes);
 
                         Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();

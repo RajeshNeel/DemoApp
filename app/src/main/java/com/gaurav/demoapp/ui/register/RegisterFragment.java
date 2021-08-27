@@ -18,6 +18,7 @@ import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.utils.CommonMethod;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -30,6 +31,7 @@ public class RegisterFragment extends Fragment {
 
     Button firebaseRegisterBtn;
     EditText editTextEmail,editTextPassword;
+    FirebaseAnalytics firebaseAnalytics;
 
 
     public RegisterFragment() {
@@ -63,6 +65,8 @@ public class RegisterFragment extends Fragment {
         editTextPassword = registerView.findViewById(R.id.password);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
 
         firebaseRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +98,10 @@ public class RegisterFragment extends Fragment {
                 if(task.isSuccessful()){
                     Toast.makeText(getContext(),"Successfully Registered", Toast.LENGTH_SHORT).show();
 
+                    Bundle bundle = new Bundle();
+
+                    bundle.putString("users_signUp", "successful");
+                    firebaseAnalytics.logEvent("users_signUp", bundle);
 
                     Navigation.findNavController(registerView).navigateUp();
 

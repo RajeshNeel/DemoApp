@@ -23,6 +23,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.gaurav.demoapp.MainActivity;
 import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.utils.CommonMethod;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -35,6 +36,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -62,6 +64,7 @@ public class HomeFragment extends Fragment {
     TextView textForgotPassword;
 
     private NavController navController;
+    private FirebaseAnalytics firebaseAnalytics;
     View root;
     ImageView userImage;
     TextView userName,userEmail;
@@ -98,6 +101,8 @@ public class HomeFragment extends Fragment {
         edit_text_user_email = root.findViewById(R.id.edit_text_user_email);
         edit_text_password = root.findViewById(R.id.password);
 
+        firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+
 
         signInButton.setSize(SignInButton.SIZE_WIDE);
 
@@ -122,7 +127,7 @@ public class HomeFragment extends Fragment {
                     return;
                 }
 
-                CommonMethod.createProgress(getContext(),"Sending reset password link");
+                CommonMethod.createProgress(getContext(),"Sending forgot password reset link");
 
                 auth.sendPasswordResetEmail(emailId).addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                     @Override
@@ -189,7 +194,11 @@ public class HomeFragment extends Fragment {
 
                         if(task.isSuccessful()){
 
+                            Bundle bundle = new Bundle();
+                            bundle.putString("users_login", "successful");
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
                             Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
+
                             CommonMethod.closeProgress();
                             Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery);
                         }
