@@ -31,6 +31,7 @@ import com.gaurav.demoapp.services.LocationUpdateService;
 import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,6 +54,9 @@ public class ProfileInfoFragment extends Fragment {
     TextView userNameTexts, userEmailTexts;
     ImageView imageViewUsers;
     DatabaseReference databaseReference;
+    FirebaseDatabase firebaseDatabase;
+    FirebaseAuth firebaseAuth;
+
     LocationManager locationManager;
 
     private final long MIN_TIME = 1000;
@@ -94,6 +98,7 @@ public class ProfileInfoFragment extends Fragment {
             Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
         }
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("Location");
 
         databaseReference.child("Latitude").push().setValue(latitude);
@@ -101,6 +106,30 @@ public class ProfileInfoFragment extends Fragment {
         databaseReference.child("Speed").push().setValue(speed);
         databaseReference.child("Accuracy").push().setValue(accuracy);
         databaseReference.child("Altitude").push().setValue(altitude);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        String userId = firebaseAuth.getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+
+        if(userId!=null){
+
+            databaseReference.child(userId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                  //  userNameTexts.setText(snapshot.getValue().;
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
 
         locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 

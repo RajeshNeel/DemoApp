@@ -24,9 +24,31 @@
             android:layout_gravity="center"
             android:fontFamily="@font/barlin_sans_fb"
             android:gravity="center"
-            android:text="Google SignIn"
+            android:text="Firebase SignUp"
             android:textColor="@color/white"
             android:textSize="50sp" />
+
+        <EditText
+            android:id="@+id/edit_text_user_full_Name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="50dp"
+            android:gravity="center|start"
+            android:layout_gravity="center_horizontal"
+            android:hint="Email Id"
+            android:background="#FFFF"
+            android:inputType="textEmailAddress|textWebEmailAddress"
+            android:longClickable="false"
+            android:paddingLeft="30dp"
+            android:paddingStart="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/mignon_regular"
+            android:shadowColor="@color/white"
+            android:textColor="@color/gray"
+            android:textColorHint="#000000"
+            android:textSize="18sp" />
 
 
         <EditText
