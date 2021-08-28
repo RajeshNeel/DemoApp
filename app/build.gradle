@@ -67,4 +67,9 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
 
+    // dependencies for google api location
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+
+
 }

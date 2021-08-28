@@ -1,5 +1,7 @@
 package com.gaurav.demoapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,6 +25,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView userImage;
     TextView userName,userEmail;
     private FirebaseAnalytics firebaseAnalytics;
+    private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
 
 
     @Override
