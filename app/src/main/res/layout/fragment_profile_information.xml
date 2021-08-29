@@ -239,7 +239,13 @@
 
         </androidx.cardview.widget.CardView>
 
-      <!--  </androidx.cardview.widget.CardView>
+
+
+
+
+
+
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card6"
@@ -283,7 +289,7 @@
 
         </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
+       <!-- <androidx.cardview.widget.CardView
             android:id="@+id/card7"
             android:layout_width="91dp"
             android:layout_height="73dp"

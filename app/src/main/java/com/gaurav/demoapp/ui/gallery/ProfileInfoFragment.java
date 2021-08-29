@@ -3,13 +3,16 @@ package com.gaurav.demoapp.ui.gallery;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +33,7 @@ import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.services.LocationUpdateService;
 import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -51,9 +55,10 @@ public class ProfileInfoFragment extends Fragment {
     @BindView(R.id.userNameText)
     TextView userNameText;
 
-    TextView userNameTexts, userEmailTexts;
+    TextView userNameTexts, userEmailTexts,text_latitude,text_longitude,text_speed,text_altitude,text_accuracy;
     ImageView imageViewUsers;
     DatabaseReference databaseReference;
+    DatabaseReference locationDatabaseRef;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
 
@@ -90,14 +95,29 @@ public class ProfileInfoFragment extends Fragment {
         userEmailTexts = root.findViewById(R.id.userEmailText);
         userNameTexts = root.findViewById(R.id.userNameText);
         imageViewUsers = root.findViewById(R.id.imageViewUser);
+        text_latitude = root.findViewById(R.id.text_latitude);
+        text_longitude = root.findViewById(R.id.text_longitude);
+        text_speed = root.findViewById(R.id.text_speed);
+        text_altitude = root.findViewById(R.id.text_altitude);
+        text_accuracy = root.findViewById(R.id.text_accuracy);
 
+
+
+    /*    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
+
+        }
+*/
 
         if (getArguments() != null) {
 
             emailId = getArguments().getString("userEmail");
-       //     userNameTexts.setText(getArguments().getString("UserName"));
-       //     userEmailTexts.setText(getArguments().getString("userEmail"));
-           // Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
+        //   userNameTexts.setText(getArguments().getString("UserName"));
+
+           userEmailTexts.setText(getArguments().getString("userEmail"));
+      //      Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
         }
 
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -106,6 +126,7 @@ public class ProfileInfoFragment extends Fragment {
 
         String userId = firebaseAuth.getUid();
         databaseReference = firebaseDatabase.getReference("Users");
+        locationDatabaseRef = firebaseDatabase.getReference("Location");
 
         if(userId!=null){
 
@@ -121,12 +142,15 @@ public class ProfileInfoFragment extends Fragment {
                     if(snapshot1.child("userEmail").getValue().equals(emailId)){
 
                         Log.v("Profile update :","snapshot data :"+snapshot1.child("userEmail").getValue(String.class)+" user name"+
-                                snapshot1.child("fullName").getValue(String.class));
+
+                                snapshot1.child("fullName").getValue(String.class)+" photo uri"+snapshot1.child("photoUri").getValue(String.class));
 
                         userEmailTexts.setText(snapshot1.child("userEmail").getValue(String.class));
                         //  .setText(snapshot1.child("photoUri").getValue(String.class));
                         userNameTexts.setText(snapshot1.child("fullName").getValue(String.class));
+
                           Glide.with(getContext()).load(snapshot1.child("photoUri").getValue(String.class)).into(imageViewUsers);
+
                     }
 
 
@@ -148,17 +172,34 @@ public class ProfileInfoFragment extends Fragment {
 
         locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-       /* databaseReference.addValueEventListener(new ValueEventListener() {
+     /*  locationDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                try {
-                    Log.v("ProfileInfo","onData Change :"+snapshot.child("Latitude").getValue().toString()+" longitude :"+snapshot.
-                            child("Longitude").getValue().toString()+" Accuracy :"+snapshot.child("Accuracy").getValue().toString()+"" +
-                            "Altitude :"+snapshot.child("Altitude").getValue()+" speed "+snapshot.child("Speed").getValue());
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+
+
+                    try {
+                        text_latitude.setText(dataSnapshot.child("Latitude").getValue(String.class));
+                        text_longitude.setText(dataSnapshot.child("Longitude").getValue(String.class));
+                        text_speed.setText(dataSnapshot.child("Speed").getValue(String.class));
+                        text_altitude.setText(dataSnapshot.child("Accuracy").getValue(String.class));
+                        text_accuracy.setText(dataSnapshot.child("Altitude").getValue(String.class));
+
+
+
+                        Log.v("ProfileInfo","onData Change :"+dataSnapshot.child("Latitude").getValue().toString()+" longitude :"+dataSnapshot.
+                                child("Longitude").getValue().toString()+" Accuracy :"+dataSnapshot.child("Accuracy").getValue().toString()+"" +
+                                "Altitude :"+dataSnapshot.child("Altitude").getValue()+" speed "+dataSnapshot.child("Speed").getValue());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
+
 
 
             }
@@ -169,18 +210,12 @@ public class ProfileInfoFragment extends Fragment {
             }
         });*/
 
-        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_DENIED){
+        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED){
 
 
 
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
         }
-
-            startLocationUpdateService();
-
-
-
-
 
         return root;
     }
@@ -188,13 +223,17 @@ public class ProfileInfoFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        Log.v("ProfileFrag :","onRequest permission :"+requestCode);
 
 
         if(requestCode==REQUEST_CODE_LOCATION_PERMISSION && grantResults.length>0){
 
-            if(grantResults[0] == PackageManager.PERMISSION_DENIED){
+            if(grantResults[0] != PackageManager.PERMISSION_DENIED){
                 startLocationUpdateService();
+
             }else{
                 Toast.makeText(getContext(),"Permission denied",Toast.LENGTH_SHORT).show();
             }
@@ -266,8 +305,49 @@ public class ProfileInfoFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("location_updated");
+        getActivity().registerReceiver(broadcastReceiver, intentFilter);
+
+    }
 
 
-     //   startLocationUpdateService();
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+
+            Log.v("Profile Frag :"," received data :"+intent.getData());
+
+            LocationResult locationResult = intent.getParcelableExtra("locationUpdateResult");
+
+            if(locationResult!=null){
+                text_latitude.setText(String.valueOf(locationResult.getLastLocation().getLatitude()));
+                text_longitude.setText(String.valueOf(locationResult.getLastLocation().getLongitude()));
+                text_speed.setText(String.valueOf(locationResult.getLastLocation().getSpeed()));
+                text_accuracy.setText(String.valueOf(locationResult.getLastLocation().getAccuracy()));
+                text_altitude.setText(String.valueOf(locationResult.getLastLocation().getAltitude()));
+
+            }
+
+
+
+        }
+    };
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("location_updated");
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getContext().unregisterReceiver(broadcastReceiver);
     }
 }

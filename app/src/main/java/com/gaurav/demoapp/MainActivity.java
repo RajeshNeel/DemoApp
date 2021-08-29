@@ -101,6 +101,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
              @Override
              public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -144,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -220,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
 
                 userEmail.setText(firebaseUser.getEmail());
                 userName.setText(firebaseUser.getDisplayName());
+                Log.v("MainActivity "," user image and name :"+firebaseUser.getDisplayName()+" url :"+
+                        firebaseUser.getPhotoUrl()+" data :"+firebaseUser.getProviderData().get(0).getDisplayName());
                 Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
             }
             else{

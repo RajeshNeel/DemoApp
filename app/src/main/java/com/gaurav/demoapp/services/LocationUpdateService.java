@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.utils.DemoAppConstants;
@@ -54,6 +55,12 @@ public class LocationUpdateService extends Service {
                     updateDatabase(String.valueOf(locationResult.getLastLocation().getLatitude()), String.valueOf(locationResult.getLastLocation().getLongitude()),
                             String.valueOf(locationResult.getLastLocation().getSpeed()), String.valueOf(locationResult.getLastLocation().getAccuracy()),
                             String.valueOf(locationResult.getLastLocation().getAltitude()));
+
+                    Intent intent = new Intent();
+                    intent.putExtra("locationUpdateResult", locationResult);
+                    intent.setAction("location_updated");
+                    sendBroadcast(intent);
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -114,11 +121,11 @@ public class LocationUpdateService extends Service {
 
 
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(5000);
+        locationRequest.setInterval(60000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED )
+                 {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding

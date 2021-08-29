@@ -125,6 +125,7 @@ public class RegisterFragment extends Fragment {
 
                     return;
                 }else{
+                    CommonMethod.createProgress(getContext(),"Registering user");
                     registerUserOnFireBase(emailId,password,users);
                 }
 
@@ -144,6 +145,8 @@ public class RegisterFragment extends Fragment {
 
                 if(task.isSuccessful()){
                     Toast.makeText(getContext(),"Successfully Registered", Toast.LENGTH_SHORT).show();
+
+                    CommonMethod.closeProgress();
 
                     Bundle bundle = new Bundle();
 
