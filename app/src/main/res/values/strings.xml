@@ -11,5 +11,26 @@
     <string name="menu_gallery">Profile Information</string>
     <string name="menu_slideshow">Slideshow</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_firebase_sign_up">Firebase SignUp</string>
+
+    <string name="text_full_name">Full Name</string>
+    <string name="text_email_id">Email Id</string>
+    <string name="text_password">Password</string>
+    <string name="text_register">SignUp</string>
+    <string name="text_firebase_sign_in">Firebase SignIn</string>
+    <string name="text_signIn">SignIn</string>
+    <string name="text_forget_password">Forgot Password ?</string>
+    <string name="text_user_name">User Name</string>
+
+    <string name="text_lat">Latitude</string>
+    <string name="text_long">Longitude</string>
+    <string name="text_accuracy">Accuracy</string>
+    <string name="text_speed">Speed</string>
+    <string name="text_altitude">Altitude</string>
+    <!--<string name="text_user_name">User Name</string>
+    <string name="text_user_name">User Name</string>-->
+
+
+
+
 </resources>

@@ -10,7 +10,7 @@ public class Users {
 
        public  Users(){
 
-         }
+}
 
     public Users(String userEmail,String userPassword){
         this.userEmail = userEmail;

@@ -10,111 +10,130 @@
     tools:context=".ui.register.RegisterFragment">
 
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/splash_text"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:fontFamily="@font/barlin_sans_fb"
-            android:gravity="center"
-            android:text="Firebase SignUp"
-            android:textColor="@color/white"
-            android:textSize="50sp" />
-
-        <EditText
-            android:id="@+id/edit_text_user_full_Name"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="50dp"
-            android:gravity="center|start"
-            android:layout_gravity="center_horizontal"
-            android:hint="Email Id"
-            android:background="#FFFF"
-            android:inputType="textEmailAddress|textWebEmailAddress"
-            android:longClickable="false"
-            android:paddingLeft="30dp"
-            android:paddingStart="30dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/mignon_regular"
-            android:shadowColor="@color/white"
-            android:textColor="@color/gray"
-            android:textColorHint="#000000"
-            android:textSize="18sp" />
-
-
-        <EditText
-            android:id="@+id/edit_text_user_email"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="50dp"
-            android:gravity="center|start"
-            android:layout_gravity="center_horizontal"
-            android:hint="Email Id"
-            android:background="#FFFF"
-            android:inputType="textEmailAddress|textWebEmailAddress"
-            android:longClickable="false"
-            android:paddingLeft="30dp"
-            android:paddingStart="30dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/mignon_regular"
-            android:shadowColor="@color/white"
-            android:textColor="@color/gray"
-            android:textColorHint="#000000"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center|start"
-            android:layout_gravity="center_horizontal"
-            android:hint="Password"
-            android:background="#FFFF"
-            android:inputType="textPassword"
-            android:longClickable="false"
-            android:paddingLeft="30dp"
-            android:paddingStart="30dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/mignon_regular"
-            android:shadowColor="@color/white"
-            android:textColor="@color/gray"
-            android:textColorHint="#000000"
-            android:textSize="18sp" />
-
-
-
-        <Button
-            android:id="@+id/firebase_sign_up_btn"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="35dp"
-            android:layout_marginStart="35dp"
-            android:padding="4dp"
-            android:background="@drawable/register_btn_background"
-            android:text="Register"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/white"
-            android:textSize="15sp"
             android:layout_height="wrap_content"
-            />
+            android:layout_margin="16dp"
+            android:layout_weight="1"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/splash_text"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/barlin_sans_fb"
+                android:gravity="center"
+                android:text="@string/text_firebase_sign_up"
+                android:textColor="@color/white"
+                android:textSize="50sp" />
+
+            <ImageView
+                android:id="@+id/user_profile_image"
+                android:layout_width="80dp"
+                android:src="@drawable/man"
+                android:layout_gravity="center"
+                android:layout_height="70dp">
+
+            </ImageView>
+
+            <EditText
+                android:id="@+id/edit_text_user_full_Name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center|start"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/text_full_name"
+                android:layout_marginTop="40dp"
+                android:background="@color/white"
+                android:inputType="textEmailAddress|textWebEmailAddress"
+                android:longClickable="false"
+                android:paddingLeft="30dp"
+                android:paddingStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/mignon_regular"
+                android:shadowColor="@color/white"
+                android:textColor="@color/gray"
+                android:textColorHint="@color/text_color_hint"
+                android:textSize="18sp" />
+
+
+            <EditText
+                android:id="@+id/edit_text_user_email"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="30dp"
+                android:gravity="center|start"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/text_email_id"
+                android:background="@color/white"
+                android:inputType="textEmailAddress|textWebEmailAddress"
+                android:longClickable="false"
+                android:paddingLeft="30dp"
+                android:paddingStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/mignon_regular"
+                android:shadowColor="@color/white"
+                android:textColor="@color/gray"
+                android:textColorHint="@color/text_color_hint"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center|start"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/text_password"
+                android:background="@color/white"
+                android:inputType="textPassword"
+                android:longClickable="false"
+                android:paddingLeft="30dp"
+                android:paddingStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/mignon_regular"
+                android:shadowColor="@color/white"
+                android:textColor="@color/gray"
+                android:textColorHint="@color/text_color_hint"
+                android:textSize="18sp" />
 
 
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/firebase_sign_up_btn"
+                android:layout_width="match_parent"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="35dp"
+                android:layout_marginStart="35dp"
+                android:padding="4dp"
+                android:background="@drawable/login_button_custom_view"
+                android:text="@string/text_register"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_height="wrap_content"
+                />
+
+
+
+        </LinearLayout>
+
+
+
+    </androidx.core.widget.NestedScrollView>
+
 
 
 

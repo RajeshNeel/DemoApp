@@ -1,6 +1,7 @@
 package com.gaurav.demoapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -43,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     NavController navController;
     private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth firebaseAuth;
     ImageView userImage;
     TextView userName,userEmail;
     private FirebaseAnalytics firebaseAnalytics;
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
+        firebaseAuth = FirebaseAuth.getInstance();
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(MainActivity.this);
 
@@ -117,8 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                         signOut();
                          CommonMethod.createProgress(MainActivity.this,"Signing Out.");
+                         signOut();
 
                          if (drawer.isDrawerOpen(GravityCompat.START)) {
                              drawer.closeDrawer(GravityCompat.START);
@@ -135,7 +141,10 @@ public class MainActivity extends AppCompatActivity {
          });
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -147,14 +156,17 @@ public class MainActivity extends AppCompatActivity {
     private void signOut() {
 
 
-        googleSignInClient.signOut()
+
+        firebaseAuth.signOut();
+        CommonMethod.closeProgress();
+               /* googleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
 
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         // ...
 
-                        CommonMethod.closeProgress();
+
                         Bundle params = new Bundle();
                         params.putString("user_logout", "Successful");
                         firebaseAnalytics.logEvent("user_logout", params);
@@ -163,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
 
                     }
-                });
+                });*/
     }
 
 
@@ -171,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        GoogleSignInAccount account = null;
+       /* GoogleSignInAccount account = null;
         try {
             account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
 
@@ -200,13 +212,51 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
             e.printStackTrace();
+        }*/
+
+        try {
+            FirebaseUser  firebaseUser =  firebaseAuth.getCurrentUser();
+            if(firebaseUser!=null){
+
+                userEmail.setText(firebaseUser.getEmail());
+                userName.setText(firebaseUser.getDisplayName());
+                Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
+            }
+            else{
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleSignInAccount account = null;
+
+
+        try {
+            FirebaseUser  firebaseUser =  firebaseAuth.getCurrentUser();
+            if(firebaseUser!=null){
+
+                userEmail.setText(firebaseUser.getEmail());
+                userName.setText(firebaseUser.getDisplayName());
+                Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
+            }
+            else{
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+       /* GoogleSignInAccount account = null;
         try {
             account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
 
@@ -222,6 +272,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
             e.printStackTrace();
-        }
+        }*/
     }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gaurav.demoapp.R;
@@ -50,10 +52,12 @@ import static android.os.Build.USER;
  */
 public class RegisterFragment extends Fragment {
 
-    Button firebaseRegisterBtn;
-    EditText editTextEmail,editTextPassword;
+    AppCompatButton firebaseRegisterBtn;
+    EditText editTextEmail,editTextPassword,edit_text_user_full_Name;
+    ImageView userImage;
     private FirebaseAnalytics firebaseAnalytics;
     private Users users;
+    private Uri profileImageUri;
 
 
     public RegisterFragment() {
@@ -87,11 +91,22 @@ public class RegisterFragment extends Fragment {
         firebaseRegisterBtn = registerView.findViewById(R.id.firebase_sign_up_btn);
         editTextEmail = registerView.findViewById(R.id.edit_text_user_email);
         editTextPassword = registerView.findViewById(R.id.password);
+        userImage = registerView.findViewById(R.id.user_profile_image);
+        edit_text_user_full_Name = registerView.findViewById(R.id.edit_text_user_full_Name);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference(USER);
+        databaseReference = firebaseDatabase.getReference("Users");
+
+
+        userImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                openGallery();
+            }
+        });
 
 
         firebaseRegisterBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,14 +115,17 @@ public class RegisterFragment extends Fragment {
 
                 String emailId = editTextEmail.getText().toString();
                 String password = editTextPassword.getText().toString();
-                String fullName =
+                String fullName = edit_text_user_full_Name.getText().toString();
+
+                Users users = new Users(emailId,password,fullName,profileImageUri.toString());
 
                 if(TextUtils.isEmpty(emailId) || TextUtils.isEmpty(password)){
                     Toast.makeText(getContext(),"Please enter email and password", Toast.LENGTH_SHORT).show();
                  //   CommonMethod.showToast(getContext(),"Please enter email and password", Toast.LENGTH_SHORT);
+
                     return;
                 }else{
-                    registerUserOnFireBase(emailId,password);
+                    registerUserOnFireBase(emailId,password,users);
                 }
 
             }
@@ -117,7 +135,8 @@ public class RegisterFragment extends Fragment {
         return registerView;
     }
 
-    private void registerUserOnFireBase(String emailId, String password) {
+    private void registerUserOnFireBase(String emailId, String password, Users users) {
+
 
         firebaseAuth.createUserWithEmailAndPassword(emailId,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -136,7 +155,7 @@ public class RegisterFragment extends Fragment {
 
                     if(firebaseUser!=null){
                         String userId = databaseReference.push().getKey();
-                        databaseReference.child(userId).setValue(user);
+                        databaseReference.child(userId).setValue(users);
                     }
 
                  /*   AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
@@ -186,7 +205,8 @@ public class RegisterFragment extends Fragment {
                                 }
                             });*/
 
-
+                    Navigation.findNavController(registerView).navigateUp();
+                //    CommonMethod.showToast(getContext(),"Successfully Registered",Toast.LENGTH_SHORT);
 
                   //
 
@@ -208,7 +228,7 @@ public class RegisterFragment extends Fragment {
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        startActivityForResult(Intent.createChooser(intent, "Select File"), REQUEST_GALLERY);
+        startActivityForResult(Intent.createChooser(intent, "Pic Image"), REQUEST_GALLERY);
     }
 
     File   imageFile;
@@ -216,11 +236,19 @@ public class RegisterFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.v("RegisterFrag","onActivityResult :"+"image uri :"+requestCode+" result code :"+resultCode);
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
-                Uri selectedImageURI = data.getData();
-                   imageFile = new File(getRealPathFromURI(selectedImageURI));
+
+            if (requestCode == 5) {
+
+                profileImageUri = data.getData();
+
+                   imageFile = new File(getRealPathFromURI(profileImageUri));
+
+                   userImage.setImageURI(profileImageUri);
+
+                   Log.v("RegisterFrag","onActivityResult :"+"image uri :"+imageFile);
 
             }
         }

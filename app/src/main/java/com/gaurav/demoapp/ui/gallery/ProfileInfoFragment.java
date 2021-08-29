@@ -79,6 +79,7 @@ public class ProfileInfoFragment extends Fragment {
     CardView cardWtdraw,cardTransfer,cardVoucher;*/
 
 
+    String emailId;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -93,47 +94,61 @@ public class ProfileInfoFragment extends Fragment {
 
         if (getArguments() != null) {
 
-            userNameTexts.setText(getArguments().getString("UserName"));
-            userEmailTexts.setText(getArguments().getString("userEmail"));
-            Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
+            emailId = getArguments().getString("userEmail");
+       //     userNameTexts.setText(getArguments().getString("UserName"));
+       //     userEmailTexts.setText(getArguments().getString("userEmail"));
+           // Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
         }
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Location");
-
-        databaseReference.child("Latitude").push().setValue(latitude);
-        databaseReference.child("Longitude").push().setValue(longitude);
-        databaseReference.child("Speed").push().setValue(speed);
-        databaseReference.child("Accuracy").push().setValue(accuracy);
-        databaseReference.child("Altitude").push().setValue(altitude);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         String userId = firebaseAuth.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+        databaseReference = firebaseDatabase.getReference("Users");
 
         if(userId!=null){
 
-            databaseReference.child(userId).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                  //  userNameTexts.setText(snapshot.getValue().;
-
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
         }
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for(DataSnapshot snapshot1: snapshot.getChildren()){
+
+                    if(snapshot1.child("userEmail").getValue().equals(emailId)){
+
+                        Log.v("Profile update :","snapshot data :"+snapshot1.child("userEmail").getValue(String.class)+" user name"+
+                                snapshot1.child("fullName").getValue(String.class));
+
+                        userEmailTexts.setText(snapshot1.child("userEmail").getValue(String.class));
+                        //  .setText(snapshot1.child("photoUri").getValue(String.class));
+                        userNameTexts.setText(snapshot1.child("fullName").getValue(String.class));
+                          Glide.with(getContext()).load(snapshot1.child("photoUri").getValue(String.class)).into(imageViewUsers);
+                    }
+
+
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
 
 
         locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+       /* databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -152,7 +167,7 @@ public class ProfileInfoFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
         if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_DENIED){
 

@@ -39,6 +39,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -194,13 +195,21 @@ public class HomeFragment extends Fragment {
 
                         if(task.isSuccessful()){
 
+
+                            FirebaseUser firebaseUser = auth.getCurrentUser();
+
+
                             Bundle bundle = new Bundle();
                             bundle.putString("users_login", "successful");
                             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
                             Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
 
                             CommonMethod.closeProgress();
-                            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery);
+                            bundle.putString("userEmail",firebaseUser.getEmail());
+                            bundle.putString("UserName",firebaseUser.getDisplayName());
+                            bundle.putString("userPhoto",String.valueOf(firebaseUser.getPhotoUrl()));
+
+                            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,bundle);
                         }
 
                     }
