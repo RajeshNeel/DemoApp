@@ -27,8 +27,13 @@
     <string name="text_accuracy">Accuracy</string>
     <string name="text_speed">Speed</string>
     <string name="text_altitude">Altitude</string>
-    <!--<string name="text_user_name">User Name</string>
-    <string name="text_user_name">User Name</string>-->
+
+
+    <string name="text_follow_use">Follow us on :</string>
+
+<!--
+    <string name="text_user_name">User Name</string>&ndash;&gt;
+-->
 
 
 

@@ -165,8 +165,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void signOut() {
 
-
-   //    CommonMethod.createProgress(getApplicationContext(),"Signing out.");
         firebaseAuth.signOut();
         Bundle params = new Bundle();
         params.putString("user_logout", "Successful");
@@ -174,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         navController.navigate(R.id.nav_homes);
 
         Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
-     //   CommonMethod.closeProgress();
+        CommonMethod.closeProgress();
 
                /* googleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {

@@ -1,12 +1,10 @@
-package com.gaurav.demoapp;
+package com.gaurav.demoapp.pojo;
 
 /**
  * Created by Gaurav Sharma on 29-08-2021 on 01:07 .
  */
 public class Users {
     private String userEmail,userPassword,fullName,photoUri;
-
-
 
        public  Users(){
 

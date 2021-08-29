@@ -34,6 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -71,6 +72,7 @@ public class HomeFragment extends Fragment {
     ImageView userImage;
     TextView userName,userEmail;
     private FirebaseAuth auth;
+    private String email,password;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -143,9 +145,16 @@ public class HomeFragment extends Fragment {
 
                         }else{
 
-                            Toast.makeText(getContext()," failed to sent reset email.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
 
                         }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -158,63 +167,20 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
 
                 Navigation.findNavController(root).navigate(R.id.action_nav_homes_to_nav_register);
-
-           //     navController.navigate(R.id.action_nav_homes_to_nav_register);
             }
         });
+
 
         firebaseLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String email = edit_text_user_email.getText().toString().trim();
+                 email = edit_text_user_email.getText().toString().trim();
 
-                String password = edit_text_password.getText().toString().trim();
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(getContext(), "Enter password!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (password.length() < 6) {
-                    Toast.makeText(getContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                CommonMethod.createProgress(getContext(),"Signing..");
+                 password = edit_text_password.getText().toString().trim();
 
 
-                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-
-                        if(task.isSuccessful()){
-
-
-                            FirebaseUser firebaseUser = auth.getCurrentUser();
-
-
-                            Bundle bundle = new Bundle();
-                            bundle.putString("users_login", "successful");
-                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
-                            Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
-
-                            CommonMethod.closeProgress();
-                            bundle.putString("userEmail",firebaseUser.getEmail());
-                            bundle.putString("UserName",firebaseUser.getDisplayName());
-                            bundle.putString("userPhoto",String.valueOf(firebaseUser.getPhotoUrl()));
-
-                            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,bundle);
-                        }
-
-                    }
-                });
+                 validateUserSignInRequest(email,password);
 
             }
         });
@@ -225,6 +191,69 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    private void validateUserSignInRequest(String email, String password) {
+
+
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getContext(), "Enter email address", Toast.LENGTH_SHORT).show();
+            edit_text_user_email.requestFocus();
+        }
+
+        else if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getContext(), "Enter password", Toast.LENGTH_SHORT).show();
+            edit_text_password.requestFocus();
+        }
+
+        else if (password.length() < 6) {
+            Toast.makeText(getContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+            edit_text_password.requestFocus();
+
+        }
+        else{
+            if(CommonMethod.haveNetworkConnection(getContext())){
+
+                CommonMethod.createProgress(getContext(),"Signing..");
+                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+
+                        CommonMethod.closeProgress();
+                        if(task.isSuccessful()){
+
+                            FirebaseUser firebaseUser = auth.getCurrentUser();
+
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("users_login", "successful");
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
+                            Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
+                            bundle.putString("userEmail",firebaseUser.getEmail());
+                            bundle.putString("UserName",firebaseUser.getDisplayName());
+                            bundle.putString("userPhoto",String.valueOf(firebaseUser.getPhotoUrl()));
+
+                            Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,bundle);
+                        }else {
+                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+            }
+
+        }
+
+    }
 
 
     private void signIn() {

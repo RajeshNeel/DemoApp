@@ -16,16 +16,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.gaurav.demoapp.R;
+import com.gaurav.demoapp.pojo.Location;
 import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,7 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 public class LocationUpdateService extends Service {
 
-    DatabaseReference databaseReference;
+   private DatabaseReference databaseReference;
 
 
     private final LocationCallback locationCallback = new LocationCallback() {
@@ -197,18 +200,33 @@ public class LocationUpdateService extends Service {
 
     private void updateDatabase(String latitude, String longitude, String speed, String accuracy, String altitude) {
 
+        Location location = new Location(latitude,longitude,speed,accuracy,altitude);
+
+        String userKey = databaseReference.push().getKey();
+
+        Log.v("LocationUpdate service ","user key "+userKey);
+
+        databaseReference.child(userKey).setValue(location).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if(task.isSuccessful()){
+
+                    Toast.makeText(getApplicationContext(),"Firebase database updated successfully",Toast.LENGTH_SHORT).show();
+
+                }else{
+                    Toast.makeText(LocationUpdateService.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
 
 
-        databaseReference.child("Latitude").push().setValue(latitude);
-        databaseReference.child("Longitude").push().setValue(longitude);
-        databaseReference.child("Speed").push().setValue(speed);
-        databaseReference.child("Accuracy").push().setValue(accuracy);
-        databaseReference.child("Altitude").push().setValue(altitude);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(LocationUpdateService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 
-
-        Toast.makeText(getApplicationContext(),"Firebase database updated successfully",Toast.LENGTH_SHORT).show();
-
-
+            }
+        });
 
     }
 

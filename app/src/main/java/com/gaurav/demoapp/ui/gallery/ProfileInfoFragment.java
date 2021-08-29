@@ -1,6 +1,7 @@
 package com.gaurav.demoapp.ui.gallery;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -32,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.services.LocationUpdateService;
+import com.gaurav.demoapp.utils.CommonMethod;
 import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.location.LocationResult;
@@ -57,7 +59,6 @@ public class ProfileInfoFragment extends Fragment {
     TextView userNameTexts, userEmailTexts,text_latitude,text_longitude,text_speed,text_altitude,text_accuracy;
     ImageView imageViewUsers;
     DatabaseReference databaseReference;
-    DatabaseReference locationDatabaseRef;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
 
@@ -67,9 +68,6 @@ public class ProfileInfoFragment extends Fragment {
     private final long MAX_TIME = 5;
     String latitude, longitude, speed, altitude, accuracy;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
-
-
-
     @BindView(R.id.userEmailText)
     TextView userEmailText;
 
@@ -101,73 +99,26 @@ public class ProfileInfoFragment extends Fragment {
         text_accuracy = root.findViewById(R.id.text_accuracy);
 
 
-
-    /*    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
-
-        }
-*/
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = firebaseDatabase.getReference("Users");
 
         if (getArguments() != null) {
 
+
             emailId = getArguments().getString("userEmail");
-        //   userNameTexts.setText(getArguments().getString("UserName"));
 
-           userEmailTexts.setText(getArguments().getString("userEmail"));
-      //      Glide.with(getContext()).load(getArguments().getString("userPhoto")).into(imageViewUsers);
-        }
+            if(emailId!=null){
+                if(CommonMethod.haveNetworkConnection(getContext())){
+                    CommonMethod.createProgress(getContext(),"Loading profile.");
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-
-        firebaseAuth = FirebaseAuth.getInstance();
-
-        String userId = firebaseAuth.getUid();
-        databaseReference = firebaseDatabase.getReference("Users");
-        locationDatabaseRef = firebaseDatabase.getReference("Location");
-
-        if(userId!=null){
-
-
-        }
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                for(DataSnapshot snapshot1: snapshot.getChildren()){
-
-                    if(snapshot1.child("userEmail").getValue().equals(emailId)){
-
-                        Log.v("Profile update :","snapshot data :"+snapshot1.child("userEmail").getValue(String.class)+" user name"+
-
-                                snapshot1.child("fullName").getValue(String.class)+" photo uri"+snapshot1.child("photoUri").getValue(String.class));
-
-                        userEmailTexts.setText(snapshot1.child("userEmail").getValue(String.class));
-                        //  .setText(snapshot1.child("photoUri").getValue(String.class));
-                        userNameTexts.setText(snapshot1.child("fullName").getValue(String.class));
-
-                          Glide.with(getContext()).load(Uri.parse(snapshot1.child("photoUri").getValue(String.class))).into(imageViewUsers);
-
-                    }
-
-
-
+                    updateUserProfile(emailId);
+                }else{
+                    Toast.makeText(getContext(), "Internet connection is missing.", Toast.LENGTH_SHORT).show();
                 }
 
-
-
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
-
+        }
 
         locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -177,8 +128,41 @@ public class ProfileInfoFragment extends Fragment {
 
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
         }
-
         return root;
+    }
+
+    private void updateUserProfile(String emailId) {
+
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                CommonMethod.closeProgress();
+
+                for(DataSnapshot snapshot1: snapshot.getChildren()){
+
+                    if(snapshot1.child("userEmail").getValue().equals(ProfileInfoFragment.this.emailId)){
+
+                        Log.v("Profile update :","snapshot data :"+snapshot1.child("userEmail").getValue(String.class)+" user name"+
+
+                                snapshot1.child("fullName").getValue(String.class)+" photo uri"+snapshot1.child("photoUri").getValue(String.class));
+
+                        userEmailTexts.setText(snapshot1.child("userEmail").getValue(String.class));
+                        userNameTexts.setText(snapshot1.child("fullName").getValue(String.class));
+                        Glide.with(getContext()).load(Uri.parse(snapshot1.child("photoUri").getValue(String.class))).into(imageViewUsers);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
     }
 
 
@@ -201,57 +185,19 @@ public class ProfileInfoFragment extends Fragment {
         }
     }
 
-    private boolean isLocationUpdateServiceRunning() {
-
-        ActivityManager activityManager = (ActivityManager)getActivity(). getSystemService(Context.ACTIVITY_SERVICE);
-
-        if(activityManager!=null){
-
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-
-
-                if (LocationServices.class.getName().equals(service.service.getClassName())) {
-
-                    if(service.foreground){
-                        Log.i("Service already","running");
-
-                        return true;
-                    }
-                }
-            }
-            Log.i("Service not","running");
-
-            return false;
-
-        }
-
-        return false;
-    }
-
-
     private void startLocationUpdateService(){
-
-   //     if(!isLocationUpdateServiceRunning()){
-
             Intent intent = new Intent(getContext(), LocationUpdateService.class);
             intent.setAction(DemoAppConstants.ACTION_START_LOCATION_SERVICE);
             getContext().startService(intent);
-
-            Toast.makeText(getContext(),"Location Update service has been started.",Toast.LENGTH_SHORT).show();
-     //   }
+            Toast.makeText(getContext(),"Location service has been started.",Toast.LENGTH_SHORT).show();
     }
 
     private void stopLocationUpdateService(){
-
-   //     if(isLocationUpdateServiceRunning()){
-
             Intent intent = new Intent(getContext(),LocationUpdateService.class);
             intent.setAction(DemoAppConstants.ACTION_STOP_LOCATION_SERVICE);
             getActivity().startService(intent);
+            Toast.makeText(getContext(),"Location service has been stopped.",Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(getContext(),"Location Update service has been stopped.",Toast.LENGTH_SHORT).show();
-
-   //     }
 
     }
 
@@ -276,16 +222,15 @@ public class ProfileInfoFragment extends Fragment {
 
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @SuppressLint("DefaultLocale")
         @Override
         public void onReceive(Context context, Intent intent) {
-
 
             Log.v("Profile Frag :"," received data :"+intent.getData());
 
             LocationResult locationResult = intent.getParcelableExtra("locationUpdateResult");
 
             if(locationResult!=null){
-
                 text_latitude.setText(String.format("%.2f",locationResult.getLastLocation().getLatitude()));
                 text_longitude.setText(String.format("%.2f",locationResult.getLastLocation().getLongitude()));
                 text_speed.setText(String.format("%.2f",locationResult.getLastLocation().getSpeed()));
@@ -293,9 +238,6 @@ public class ProfileInfoFragment extends Fragment {
                 text_altitude.setText(String.format("%.2f",locationResult.getLastLocation().getAltitude()));
 
             }
-
-
-
         }
     };
 
@@ -304,9 +246,7 @@ public class ProfileInfoFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("location_updated");
-        getContext().registerReceiver(broadcastReceiver, intentFilter);
+
     }
 
     @Override
