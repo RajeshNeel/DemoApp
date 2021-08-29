@@ -166,9 +166,16 @@ public class MainActivity extends AppCompatActivity {
     private void signOut() {
 
 
-
+   //    CommonMethod.createProgress(getApplicationContext(),"Signing out.");
         firebaseAuth.signOut();
-        CommonMethod.closeProgress();
+        Bundle params = new Bundle();
+        params.putString("user_logout", "Successful");
+        firebaseAnalytics.logEvent("user_logout", params);
+        navController.navigate(R.id.nav_homes);
+
+        Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
+     //   CommonMethod.closeProgress();
+
                /* googleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
 
@@ -232,12 +239,17 @@ public class MainActivity extends AppCompatActivity {
                 userName.setText(firebaseUser.getDisplayName());
                 Log.v("MainActivity "," user image and name :"+firebaseUser.getDisplayName()+" url :"+
                         firebaseUser.getPhotoUrl()+" data :"+firebaseUser.getProviderData().get(0).getDisplayName());
-                Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
+          //      Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
             }
             else{
 
 
             }
+
+
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -256,15 +268,20 @@ public class MainActivity extends AppCompatActivity {
 
                 userEmail.setText(firebaseUser.getEmail());
                 userName.setText(firebaseUser.getDisplayName());
-                Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
+             //   Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
             }
             else{
 
 
             }
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
 
 

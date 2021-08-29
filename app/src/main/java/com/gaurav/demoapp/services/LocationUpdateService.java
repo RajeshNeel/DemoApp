@@ -121,7 +121,7 @@ public class LocationUpdateService extends Service {
 
 
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(60000);
+        locationRequest.setInterval(50000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED )
