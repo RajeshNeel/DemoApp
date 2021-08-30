@@ -8,6 +8,7 @@ package com.gaurav.demoapp.utils;
      public static final int LOCATION_SERVICE_ID = 147;
      public static final String ACTION_START_LOCATION_SERVICE = "startLocationUpdate";
      public static final String ACTION_STOP_LOCATION_SERVICE = "stopLocationUpdate";
+     public static String signInByStatus = "firebaseAccount";
 
 
 }

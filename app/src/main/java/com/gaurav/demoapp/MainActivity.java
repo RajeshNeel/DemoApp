@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.gaurav.demoapp.utils.CommonMethod;
+import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
          userName = (TextView) headerView.findViewById(R.id.userName);
          userEmail = (TextView) headerView.findViewById(R.id.userEmail);
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
              @Override
              public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                          CommonMethod.createProgress(MainActivity.this,"Signing Out.");
-                         signOut();
+                         signOut(DemoAppConstants.signInByStatus);
 
                          if (drawer.isDrawerOpen(GravityCompat.START)) {
                              drawer.closeDrawer(GravityCompat.START);
@@ -147,34 +148,45 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    private void signOut() {
+    private void signOut(String signInByStatus) {
 
-        firebaseAuth.signOut();
-        Bundle params = new Bundle();
-        params.putString("user_logout", "Successful");
-        firebaseAnalytics.logEvent("user_logout", params);
-        navController.navigate(R.id.nav_homes);
-
-        Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
-        CommonMethod.closeProgress();
-
-               /* googleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
+        if(signInByStatus!=null){
 
 
-                        Bundle params = new Bundle();
-                        params.putString("user_logout", "Successful");
-                        firebaseAnalytics.logEvent("user_logout", params);
-                        navController.navigate(R.id.nav_homes);
 
-                        Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
+            if(signInByStatus.equalsIgnoreCase("firebaseAccount")){
+                Bundle params = new Bundle();
+                params.putString("user_logout", "Successful");
+                firebaseAnalytics.logEvent("user_logout", params);
+                firebaseAuth.signOut();
+            }
+            else{
 
-                    }
-                });*/
+                googleSignInClient.signOut()
+                        .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                // ...
+
+
+                                Bundle params = new Bundle();
+                                params.putString("user_logout", "Successful");
+                                firebaseAnalytics.logEvent("user_logout", params);
+                                navController.navigate(R.id.nav_homes);
+
+
+                            }
+                        });
+            }
+
+            CommonMethod.closeProgress();
+            Toast.makeText(MainActivity.this, "User SignOut Successfully", Toast.LENGTH_SHORT).show();
+            navController.navigate(R.id.nav_homes);
+
+
+        }
+
     }
 
 
@@ -182,107 +194,69 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-       /* GoogleSignInAccount account = null;
-        try {
-            account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
 
-            if(account!=null){
+        if (DemoAppConstants.signInByStatus.equalsIgnoreCase("firebaseAccount")) {
 
-                userEmail.setText(account.getEmail());
-                userName.setText(account.getDisplayName());
-                Log.v("MainActivity :"," image url 2:"+account.getPhotoUrl());
+            try {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-                try {
-                    if(account.getPhotoUrl()!=null){
+                if (firebaseUser != null) {
 
-                        Glide.with(MainActivity.this).load(account.getPhotoUrl()).into(userImage);
+                    userEmail.setText(firebaseUser.getEmail());
+                    userName.setText(firebaseUser.getDisplayName());
+                    Log.v("MainActivity ", " user image and name :" + firebaseUser.getDisplayName() + " url :" +
+                            firebaseUser.getPhotoUrl() + " data :" + firebaseUser.getProviderData().get(0).getDisplayName());
+                    Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
 
-                    }
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }catch (Exception e) {
-                    e.printStackTrace();
                 }
 
+                else {
+
+                    Toast.makeText(this, "Users is not loggedIn.", Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+
+            GoogleSignInAccount account = null;
+            try {
+                account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+
+                if (account != null) {
+
+                    userEmail.setText(account.getEmail());
+                    userName.setText(account.getDisplayName());
+                    Log.v("MainActivity :", " image url 2:" + account.getPhotoUrl());
+
+                    try {
+                        if (account.getPhotoUrl() != null) {
+
+                            Glide.with(MainActivity.this).load(account.getPhotoUrl()).into(userImage);
+
+                        }
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+
+                e.printStackTrace();
             }
 
-        } catch (NullPointerException e){
-            e.printStackTrace();
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }*/
-
-        try {
-            FirebaseUser  firebaseUser =  firebaseAuth.getCurrentUser();
-            if(firebaseUser!=null){
-
-                userEmail.setText(firebaseUser.getEmail());
-                userName.setText(firebaseUser.getDisplayName());
-                Log.v("MainActivity "," user image and name :"+firebaseUser.getDisplayName()+" url :"+
-                        firebaseUser.getPhotoUrl()+" data :"+firebaseUser.getProviderData().get(0).getDisplayName());
-          //      Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
-            }
-            else{
-
-
-            }
-
-
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-
-        try {
-            FirebaseUser  firebaseUser =  firebaseAuth.getCurrentUser();
-            if(firebaseUser!=null){
-
-                userEmail.setText(firebaseUser.getEmail());
-                userName.setText(firebaseUser.getDisplayName());
-             //   Glide.with(this).load(String.valueOf(firebaseUser.getPhotoUrl())).into(userImage);
-            }
-            else{
-
-
-            }
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
-       /* GoogleSignInAccount account = null;
-        try {
-            account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
-
-            if(account!=null){
-                userEmail.setText(account.getEmail());
-                userName.setText(account.getDisplayName());
-                Glide.with(this).load(String.valueOf(account.getPhotoUrl())).into(userImage);
-
-            }
-
-        } catch (NullPointerException e){
-            e.printStackTrace();
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }*/
     }
 }

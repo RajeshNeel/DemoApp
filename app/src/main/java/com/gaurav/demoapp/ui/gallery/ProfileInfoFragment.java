@@ -70,7 +70,7 @@ public class ProfileInfoFragment extends Fragment {
     LocationManager locationManager;
     View root;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
-    String emailId;
+    String emailId,signInByStatus;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -85,14 +85,46 @@ public class ProfileInfoFragment extends Fragment {
         if (getArguments() != null) {
 
 
+            signInByStatus = getArguments().getString("signInByStatus");
             emailId = getArguments().getString("userEmail");
 
-            if(emailId!=null){
-                if(CommonMethod.haveNetworkConnection(getContext())){
-                    CommonMethod.createProgress(getContext(),"Loading profile.");
+            Log.v("ProfileInfo Frag 1","signInByStatus"+" :"+signInByStatus);
 
-                    updateUserProfile(emailId);
+            try {
+
+                if(signInByStatus!=null || !signInByStatus.isEmpty()){
+
                 }else{
+                    signInByStatus = DemoAppConstants.signInByStatus;
+                }
+
+            } catch (Exception e) {
+
+                signInByStatus = DemoAppConstants.signInByStatus;
+                e.printStackTrace();
+            }
+
+            Log.v("ProfileInfo Frag 2","signInByStatus"+" :"+signInByStatus);
+
+
+            if(emailId!=null){
+
+                if(CommonMethod.haveNetworkConnection(getContext())){
+
+                    if(signInByStatus.equalsIgnoreCase("firebaseAccount")){
+                        CommonMethod.createProgress(getContext(),"Loading profile.");
+                        updateUserProfile(emailId);
+
+                    }else{
+
+                        userEmailTexts.setText( getArguments().getString("userEmail"));
+                        userNameTexts.setText( getArguments().getString("UserName"));
+                        Glide.with(getContext()).load( getArguments().getString("userPhoto")).into(imageViewUsers);
+                        startLocationUpdateService();
+                    }
+
+                }
+                else{
                     Toast.makeText(getContext(), "Internet connection is missing.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -106,6 +138,8 @@ public class ProfileInfoFragment extends Fragment {
 
 
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
+        }else{
+            startLocationUpdateService();
         }
         return root;
     }

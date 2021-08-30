@@ -29,6 +29,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.gaurav.demoapp.MainActivity;
 import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.utils.CommonMethod;
+import com.gaurav.demoapp.utils.DemoAppConstants;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -67,16 +68,13 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.password) EditText edit_text_password;
     @BindView(R.id.text_forgot_password) TextView text_forgot_password;
 
-    Button firebaseLoginBtn,firebaseSignUpBtn;
-    TextView textForgotPassword;
-
     private NavController navController;
     private FirebaseAnalytics firebaseAnalytics;
     View root;
     ImageView userImage;
     TextView userName,userEmail;
     private FirebaseAuth auth;
-    private String email,password;
+    private String email,password,signInByStatus;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -106,6 +104,7 @@ public class HomeFragment extends Fragment {
             case R.id.sign_in_button:
 
                 signIn();
+                DemoAppConstants.signInByStatus = "googleAccount";
 
                 break;
             case R.id.firebase_sign_in_btn:
@@ -114,7 +113,9 @@ public class HomeFragment extends Fragment {
 
                 password = edit_text_password.getText().toString().trim();
 
-                validateUserSignInRequest(email,password);
+                DemoAppConstants.signInByStatus = "firebaseAccount";
+
+                validateUserSignInRequest(signInByStatus,email,password);
 
                 break;
             case R.id.firebase_sign_up_btn:
@@ -164,7 +165,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void validateUserSignInRequest(String email, String password) {
+    private void validateUserSignInRequest(String signInByStatus, String email, String password) {
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getContext(), "Enter email address", Toast.LENGTH_SHORT).show();
@@ -207,9 +208,11 @@ public class HomeFragment extends Fragment {
                             bundle.putString("users_login", "successful");
                             firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, bundle);
                             Toast.makeText(getContext(),"successfully login",Toast.LENGTH_SHORT).show();
+
                             bundle.putString("userEmail",firebaseUser.getEmail());
                             bundle.putString("UserName",firebaseUser.getDisplayName());
                             bundle.putString("userPhoto",String.valueOf(firebaseUser.getPhotoUrl()));
+                            bundle.putString("signInByStatus", signInByStatus);
 
                             Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,bundle);
                         }else {
@@ -272,15 +275,16 @@ public class HomeFragment extends Fragment {
                 Uri personPhoto = acct.getPhotoUrl();
             }
 
-            Toast.makeText(getContext(),"SignedIn Successfully."+acct.getDisplayName()+" person email :"+acct.getEmail(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"SignedIn Successfully."+acct.getEmail(),Toast.LENGTH_SHORT).show();
             // Signed in successfully, show authenticated UI.
             Bundle profileInfo = new Bundle();
-            profileInfo.putString("UserName", account.getDisplayName());
-            profileInfo.putString("userGivenName", account.getGivenName());
-            profileInfo.putString("userFamilyName", account.getFamilyName());
+            profileInfo.putString("UserName", account.getGivenName());
             profileInfo.putString("userEmail", account.getEmail());
             profileInfo.putString("userPhoto", String.valueOf(account.getPhotoUrl()));
+            profileInfo.putString("signInByStatus", signInByStatus);
 
+
+            DemoAppConstants.signInByStatus = "googleAccount";
 
             Navigation.findNavController(root).navigate(R.id.action_nav_home_to_nav_gallery,profileInfo);
 
