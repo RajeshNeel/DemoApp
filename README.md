@@ -110,6 +110,18 @@ Android app through which user can SignIn/SignUp through Google Account and show
 
 
 
+      **  .... implemented full app developement with the help of android developer and firebase developer console . --**
+
+      URLS ARE AS FOLLOW ...
+
+       **-- https://console.firebase.google.com/ --**
+       **--https://developer.android.com/ --**
+
+
+
+
+
+
 
 
 

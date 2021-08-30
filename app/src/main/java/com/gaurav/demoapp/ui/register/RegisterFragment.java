@@ -54,7 +54,6 @@ import static android.app.Activity.RESULT_OK;
  */
 public class RegisterFragment extends Fragment {
 
-
     @BindView(R.id.firebase_sign_up_btn) AppCompatButton firebaseRegisterBtn;
     @BindView(R.id.edit_text_user_email) EditText editTextEmail;
     @BindView(R.id.password) EditText editTextPassword;
@@ -64,7 +63,7 @@ public class RegisterFragment extends Fragment {
     private FirebaseAnalytics firebaseAnalytics;
     private Users user;
     private Uri profileImageUri;
-    String emailId,password,fullName;
+     private String emailId,password,fullName;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -132,6 +131,7 @@ public class RegisterFragment extends Fragment {
 
 
 
+
     private void validateUserRegistrationInput(String emailId, String password, String fullName, String photoUri) {
 
         if(photoUri.isEmpty() || photoUri.length()==0){
@@ -181,6 +181,9 @@ public class RegisterFragment extends Fragment {
 
     }
 
+
+    //--** Reference --// https://firebase.google.com/docs/auth/android/password-auth --//**
+
     private void registerUserOnFireBase(String emailId, String password, Users users) {
 
         user = users;
@@ -216,6 +219,8 @@ public class RegisterFragment extends Fragment {
 
 
     }
+
+    //--** Reference --// https://firebase.google.com/docs/auth/android/password-auth --//**
 
     private void uploadUserDataToFirebase(Task<AuthResult> task, Users user) {
 

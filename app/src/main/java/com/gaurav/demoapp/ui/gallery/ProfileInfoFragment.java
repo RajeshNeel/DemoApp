@@ -144,6 +144,7 @@ public class ProfileInfoFragment extends Fragment {
         return root;
     }
 
+    //--**Reference --https://console.firebase.google.com/ --//**
 
     private void updateUserProfile(String emailId) {
 
@@ -199,12 +200,17 @@ public class ProfileInfoFragment extends Fragment {
         }
     }
 
+
+
+    //-- Reference --// https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient --//**
+
     private void startLocationUpdateService(){
             Intent intent = new Intent(getContext(), LocationUpdateService.class);
             intent.setAction(DemoAppConstants.ACTION_START_LOCATION_SERVICE);
             getContext().startService(intent);
             Toast.makeText(getContext(),"Location service has been started.",Toast.LENGTH_SHORT).show();
     }
+
 
     private void stopLocationUpdateService(){
             Intent intent = new Intent(getContext(),LocationUpdateService.class);
@@ -221,6 +227,9 @@ public class ProfileInfoFragment extends Fragment {
         stopLocationUpdateService();
 
     }
+
+
+    //--** Reference --// https://developer.android.com/guide/components/broadcasts --//**
 
     @Override
     public void onResume() {

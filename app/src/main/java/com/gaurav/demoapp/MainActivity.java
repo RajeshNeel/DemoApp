@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAnalytics firebaseAnalytics;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
 
-    ImageView userImage;
-    TextView userName,userEmail;
+    private ImageView userImage;
+     private TextView userName,userEmail;
 
 
     @Override
@@ -151,9 +151,6 @@ public class MainActivity extends AppCompatActivity {
     private void signOut(String signInByStatus) {
 
         if(signInByStatus!=null){
-
-
-
             if(signInByStatus.equalsIgnoreCase("firebaseAccount")){
                 Bundle params = new Bundle();
                 params.putString("user_logout", "Successful");

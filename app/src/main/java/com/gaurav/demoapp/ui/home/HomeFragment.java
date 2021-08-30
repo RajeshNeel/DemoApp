@@ -135,35 +135,48 @@ public class HomeFragment extends Fragment {
 
                 CommonMethod.createProgress(getContext(),"Sending forgot password reset link");
 
-                auth.sendPasswordResetEmail(emailId).addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                sendForgetPasswordResetEmail(emailId);
 
-                        CommonMethod.closeProgress();
 
-                        if(task.isSuccessful()){
-
-                            Toast.makeText(getContext()," password reset link has been sent to your email.",Toast.LENGTH_SHORT).show();
-
-                        }else{
-
-                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
-
-                        }
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-
-                    }
-                });
                 break;
 
         }
     }
+
+    // --** Reference--https://console.firebase.google.com/
+
+    private void sendForgetPasswordResetEmail(String emailId) {
+
+        auth.sendPasswordResetEmail(emailId).addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                CommonMethod.closeProgress();
+
+                if(task.isSuccessful()){
+
+                    Toast.makeText(getContext()," password reset link has been sent to your email.",Toast.LENGTH_SHORT).show();
+
+                }else{
+
+                    Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+
+    //   --**reference--** https://firebase.google.com/docs/auth/android/password-auth --**
 
     private void validateUserSignInRequest(String signInByStatus, String email, String password) {
 
@@ -237,6 +250,8 @@ public class HomeFragment extends Fragment {
     }
 
 
+    // reference https://developer.google.com/
+
     private void signIn() {
 
         CommonMethod.createProgress(getContext(),"Signing...");
@@ -256,6 +271,8 @@ public class HomeFragment extends Fragment {
             handleSignInResult(task);
         }
     }
+
+    // --**reference --** https://developer.google.com/ --**
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
 
