@@ -13,17 +13,22 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaurav.demoapp.R;
 import com.gaurav.demoapp.pojo.Users;
 import com.gaurav.demoapp.utils.CommonMethod;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -36,6 +41,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -45,9 +54,13 @@ import static android.app.Activity.RESULT_OK;
  */
 public class RegisterFragment extends Fragment {
 
-    AppCompatButton firebaseRegisterBtn;
-    EditText editTextEmail,editTextPassword,edit_text_user_full_Name;
-    ImageView userImage;
+
+    @BindView(R.id.firebase_sign_up_btn) AppCompatButton firebaseRegisterBtn;
+    @BindView(R.id.edit_text_user_email) EditText editTextEmail;
+    @BindView(R.id.password) EditText editTextPassword;
+    @BindView(R.id.user_profile_image) ImageView userImage;
+    @BindView(R.id.edit_text_user_full_Name) EditText edit_text_user_full_Name;
+
     private FirebaseAnalytics firebaseAnalytics;
     private Users user;
     private Uri profileImageUri;
@@ -56,7 +69,6 @@ public class RegisterFragment extends Fragment {
     public RegisterFragment() {
         // Required empty public constructor
     }
-
 
     public static RegisterFragment newInstance(String param1, String param2) {
         RegisterFragment fragment = new RegisterFragment();
@@ -84,54 +96,41 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-         registerView = inflater.inflate(R.layout.fragment_register, container, false);
-
-        firebaseRegisterBtn = registerView.findViewById(R.id.firebase_sign_up_btn);
-        editTextEmail = registerView.findViewById(R.id.edit_text_user_email);
-        editTextPassword = registerView.findViewById(R.id.password);
-        userImage = registerView.findViewById(R.id.user_profile_image);
-        edit_text_user_full_Name = registerView.findViewById(R.id.edit_text_user_full_Name);
-
+        registerView = inflater.inflate(R.layout.fragment_register, container, false);
+        ButterKnife.bind(this,registerView);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("Users");
 
-
-        userImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                openGallery();
-            }
-        });
-
-
-        firebaseRegisterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                 emailId = editTextEmail.getText().toString();
-                 password = editTextPassword.getText().toString();
-                 fullName = edit_text_user_full_Name.getText().toString();
-
-
-
-
-                validateUserRegistrationInput(emailId,password,fullName,profileImageUri.toString());
-
-
-
-
-            }
-        });
-
-
         return registerView;
     }
+
+
+
+    @OnClick({R.id.firebase_sign_up_btn,R.id.user_profile_image})
+    public void goToRegisterDestination(View view){
+        switch(view.getId()){
+
+            case R.id.firebase_sign_up_btn:
+
+                emailId = editTextEmail.getText().toString();
+                password = editTextPassword.getText().toString();
+                fullName = edit_text_user_full_Name.getText().toString();
+                validateUserRegistrationInput(emailId,password,fullName,profileImageUri.toString());
+                break;
+            case R.id.user_profile_image:
+                openGallery();
+                break;
+
+
+        }
+    }
+
+
+
+
 
     private void validateUserRegistrationInput(String emailId, String password, String fullName, String photoUri) {
 
@@ -149,7 +148,15 @@ public class RegisterFragment extends Fragment {
             Toast.makeText(getContext(),"Enter emailId", Toast.LENGTH_SHORT).show();
             editTextEmail.requestFocus();
 
-        }else if (password.isEmpty()){
+        }
+        else if(!CommonMethod.isValidFirebaseEmailId(emailId)){
+
+            Toast.makeText(getContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
+            editTextEmail.requestFocus();
+
+        }
+
+       else if (password.isEmpty()){
             Toast.makeText(getContext(),"Enter password", Toast.LENGTH_SHORT).show();
             editTextPassword.requestFocus();
 
@@ -158,7 +165,7 @@ public class RegisterFragment extends Fragment {
 
            if(CommonMethod.haveNetworkConnection(getContext())){
 
-                user = new Users(emailId,password,fullName,profileImageUri.toString());
+               user = new Users(emailId,password,fullName,profileImageUri.toString());
                CommonMethod.createProgress(getContext(),"Registering user");
 
                registerUserOnFireBase(emailId,password,user);

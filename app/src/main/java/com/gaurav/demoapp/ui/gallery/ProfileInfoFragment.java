@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -47,57 +48,35 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.content.Context.LOCATION_SERVICE;
 
 public class ProfileInfoFragment extends Fragment {
 
+    @BindView(R.id.imageViewUser) ImageView imageViewUsers;
+    @BindView(R.id.userNameText) TextView userNameTexts;
+    @BindView(R.id.userEmailText) TextView userEmailTexts;
+    @BindView(R.id.text_latitude) TextView text_latitude;
+    @BindView(R.id.text_longitude) TextView text_longitude;
+    @BindView(R.id.text_speed) TextView text_speed;
+    @BindView(R.id.text_altitude) TextView text_altitude;
+    @BindView(R.id.text_accuracy) TextView text_accuracy;
 
-    @BindView(R.id.imageViewUser) ImageView imageViewUser;
-    @BindView(R.id.userNameText) TextView userNameText;
-
-    TextView userNameTexts, userEmailTexts,text_latitude,text_longitude,text_speed,text_altitude,text_accuracy;
-    ImageView imageViewUsers;
     DatabaseReference databaseReference;
     FirebaseDatabase firebaseDatabase;
     FirebaseAuth firebaseAuth;
 
     LocationManager locationManager;
-
-    private final long MIN_TIME = 1000;
-    private final long MAX_TIME = 5;
-    String latitude, longitude, speed, altitude, accuracy;
+    View root;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
-    @BindView(R.id.userEmailText)
-    TextView userEmailText;
-
-  /*
-    @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
-    @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
-    @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
-
-
-    ImageView imgFb,imgLinkDn,imgTw,imgInstGram;
-    CardView cardWtdraw,cardTransfer,cardVoucher;*/
-
-
     String emailId;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
 
-        View root = inflater.inflate(R.layout.fragment_profile_information, container, false);
-        ButterKnife.bind(root);
-
-        userEmailTexts = root.findViewById(R.id.userEmailText);
-        userNameTexts = root.findViewById(R.id.userNameText);
-        imageViewUsers = root.findViewById(R.id.imageViewUser);
-        text_latitude = root.findViewById(R.id.text_latitude);
-        text_longitude = root.findViewById(R.id.text_longitude);
-        text_speed = root.findViewById(R.id.text_speed);
-        text_altitude = root.findViewById(R.id.text_altitude);
-        text_accuracy = root.findViewById(R.id.text_accuracy);
-
+         root = inflater.inflate(R.layout.fragment_profile_information, container, false);
+         ButterKnife.bind(this,root);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
@@ -130,6 +109,7 @@ public class ProfileInfoFragment extends Fragment {
         }
         return root;
     }
+
 
     private void updateUserProfile(String emailId) {
 
@@ -219,8 +199,6 @@ public class ProfileInfoFragment extends Fragment {
         getActivity().registerReceiver(broadcastReceiver, intentFilter);
 
     }
-
-
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @SuppressLint("DefaultLocale")
         @Override
@@ -241,11 +219,9 @@ public class ProfileInfoFragment extends Fragment {
         }
     };
 
-
     @Override
     public void onStart() {
         super.onStart();
-
 
     }
 

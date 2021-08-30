@@ -48,10 +48,11 @@ public class MainActivity extends AppCompatActivity {
     NavController navController;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth firebaseAuth;
-    ImageView userImage;
-    TextView userName,userEmail;
     private FirebaseAnalytics firebaseAnalytics;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+
+    ImageView userImage;
+    TextView userName,userEmail;
 
 
     @Override
@@ -63,11 +64,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-
-
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -79,11 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(MainActivity.this);
 
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-
-                R.id.nav_homes, R.id.nav_profile_details)
-                .setDrawerLayout(drawer)
-                .build();
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_homes, R.id.nav_profile_details).setDrawerLayout(drawer).build();
 
 
          navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -91,20 +84,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-
-        View headerView = navigationView.getHeaderView(0);
+         View headerView = navigationView.getHeaderView(0);
 
          userImage  = headerView.findViewById(R.id.imageView);
          userName = (TextView) headerView.findViewById(R.id.userName);
          userEmail = (TextView) headerView.findViewById(R.id.userEmail);
-
-
-
-
-
-
-
-
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
              @Override

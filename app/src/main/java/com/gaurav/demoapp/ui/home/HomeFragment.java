@@ -5,11 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,25 +47,27 @@ import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+
     private GoogleSignInClient googleSignInClient;
     private int  RC_SIGN_IN = 100;
-    @BindView(R.id.sign_in_button) SignInButton googleSignInBtn;
+
+    @BindView(R.id.sign_in_button)  SignInButton googleSignInBtn;
     @BindView(R.id.firebase_sign_in_btn) Button firebase_sign_in_btn;
+
     @BindView(R.id.firebase_sign_up_btn) Button firebase_sign_up_btn;
 
-   /* @BindView(R.id.edit_text_user_email) EditText edit_text_user_email;
-    @BindView(R.id.password) EditText edit_text_password;*/
+    @BindView(R.id.edit_text_user_email) EditText edit_text_user_email;
 
-
-
+    @BindView(R.id.password) EditText edit_text_password;
+    @BindView(R.id.text_forgot_password) TextView text_forgot_password;
 
     Button firebaseLoginBtn,firebaseSignUpBtn;
-    EditText edit_text_user_email,edit_text_password;
     TextView textForgotPassword;
 
     private NavController navController;
@@ -74,55 +78,52 @@ public class HomeFragment extends Fragment {
     private FirebaseAuth auth;
     private String email,password;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-
-
-
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
          root = inflater.inflate(R.layout.fragment_home, container, false);
-         ButterKnife.bind(getActivity(),root);
+         ButterKnife.bind(this,root);
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
-
-
         googleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
 
         auth = FirebaseAuth.getInstance();
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-
-        SignInButton signInButton = root.findViewById(R.id.sign_in_button);
-
-        firebaseLoginBtn = root.findViewById(R.id.firebase_sign_in_btn);
-        firebaseSignUpBtn = root.findViewById(R.id.firebase_sign_up_btn);
-        textForgotPassword = root.findViewById(R.id.text_forgot_password);
-
-        edit_text_user_email = root.findViewById(R.id.edit_text_user_email);
-        edit_text_password = root.findViewById(R.id.password);
-
         firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
+        return root;
+    }
 
-        signInButton.setSize(SignInButton.SIZE_WIDE);
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @OnClick({R.id.firebase_sign_in_btn,R.id.sign_in_button,R.id.firebase_sign_up_btn,R.id.text_forgot_password})
+    public void goToDestination(View view){
+        switch(view.getId()){
+
+            case R.id.sign_in_button:
 
                 signIn();
 
-            }
-        });
+                break;
+            case R.id.firebase_sign_in_btn:
+
+                email = edit_text_user_email.getText().toString().trim();
+
+                password = edit_text_password.getText().toString().trim();
+
+                validateUserSignInRequest(email,password);
+
+                break;
+            case R.id.firebase_sign_up_btn:
+
+                Navigation.findNavController(root).navigate(R.id.action_nav_homes_to_nav_register);
 
 
-        textForgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.text_forgot_password:
 
                 String emailId = edit_text_user_email.getText().toString();
 
@@ -158,46 +159,23 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
+                break;
 
-            }
-        });
-
-        firebaseSignUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Navigation.findNavController(root).navigate(R.id.action_nav_homes_to_nav_register);
-            }
-        });
-
-
-        firebaseLoginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                 email = edit_text_user_email.getText().toString().trim();
-
-                 password = edit_text_password.getText().toString().trim();
-
-
-                 validateUserSignInRequest(email,password);
-
-            }
-        });
-
-
-
-
-        return root;
+        }
     }
 
     private void validateUserSignInRequest(String email, String password) {
 
-
-
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getContext(), "Enter email address", Toast.LENGTH_SHORT).show();
             edit_text_user_email.requestFocus();
+        }
+
+        else if(!CommonMethod.isValidFirebaseEmailId(email)){
+
+            Toast.makeText(getContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
+            edit_text_user_email.requestFocus();
+
         }
 
         else if (TextUtils.isEmpty(password)) {
